@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HKDSE 生物科 SBA Area B 實驗探究 Lesson App</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- FontAwesome 圖標庫 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    [v-cloak] { display: none; }
+    .fade-enter-active, .fade-leave-active { transition: opacity 0.25s ease; }
+    .fade-enter-from, .fade-leave-to { opacity: 0; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans text-base md:text-lg min-h-screen antialiased">
+
+  <div id="app" v-cloak class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- 頂部導航欄與標題 -->
+    <header class="bg-emerald-700 text-white rounded-3xl p-6 md:p-8 shadow-xl mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div>
+          <span class="bg-emerald-800 text-emerald-200 text-sm md:text-base font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-block">
+            HKDSE Biology SBA Master
+          </span>
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-black mt-3 leading-tight">茶葉抗氧化物釋出量探究與評鑑</h1>
+          <p class="text-emerald-100 text-base md:text-xl mt-2 font-medium">校本評核 Area B1（實驗規劃）與 Area B2（數據分析及評鑑）互動學習教室</p>
+        </div>
+        
+        <!-- 表現等級過濾器 -->
+        <div class="bg-emerald-800/90 p-2.5 rounded-2xl border border-emerald-500/50 flex flex-wrap items-center gap-2 self-start lg:self-auto shadow-inner">
+          <span class="text-sm md:text-base text-emerald-100 font-bold px-2">評估層級:</span>
+          <button @click="currentLevel = 'basic'" :class="currentLevel === 'basic' ? 'bg-amber-500 text-white font-extrabold shadow-md' : 'text-emerald-100 hover:bg-emerald-700 font-medium'" class="px-4 py-2 text-sm md:text-base rounded-xl transition">基礎 (L1-2)</button>
+          <button @click="currentLevel = 'good'" :class="currentLevel === 'good' ? 'bg-blue-500 text-white font-extrabold shadow-md' : 'text-emerald-100 hover:bg-emerald-700 font-medium'" class="px-4 py-2 text-sm md:text-base rounded-xl transition">良好 (L3-4)</button>
+          <button @click="currentLevel = 'excellent'" :class="currentLevel === 'excellent' ? 'bg-purple-600 text-white font-extrabold shadow-md' : 'text-emerald-100 hover:bg-emerald-700 font-medium'" class="px-4 py-2 text-sm md:text-base rounded-xl transition">優異 (L5/5*)</button>
+        </div>
+      </div>
+
+      <!-- 4 大版面切換按鈕 -->
+      <nav class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
+        <button @click="currentScreen = 1" :class="currentScreen === 1 ? 'bg-white text-emerald-950 font-black shadow-lg scale-[1.02]' : 'bg-emerald-800/70 hover:bg-emerald-800 text-white font-semibold'" class="py-3.5 px-4 rounded-2xl text-base md:text-lg flex items-center justify-center gap-2.5 transition transform">
+          <i class="fa-solid fa-compass text-lg"></i> 1. Area B 規範
+        </button>
+        <button @click="currentScreen = 2" :class="currentScreen === 2 ? 'bg-white text-emerald-950 font-black shadow-lg scale-[1.02]' : 'bg-emerald-800/70 hover:bg-emerald-800 text-white font-semibold'" class="py-3.5 px-4 rounded-2xl text-base md:text-lg flex items-center justify-center gap-2.5 transition transform">
+          <i class="fa-solid fa-flask text-lg"></i> 2. 實驗背景與步驟
+        </button>
+        <button @click="currentScreen = 3" :class="currentScreen === 3 ? 'bg-white text-emerald-950 font-black shadow-lg scale-[1.02]' : 'bg-emerald-800/70 hover:bg-emerald-800 text-white font-semibold'" class="py-3.5 px-4 rounded-2xl text-base md:text-lg flex items-center justify-center gap-2.5 transition transform">
+          <i class="fa-solid fa-pen-ruler text-lg"></i> 3. 實驗前思考 (B1)
+        </button>
+        <button @click="currentScreen = 4" :class="currentScreen === 4 ? 'bg-white text-emerald-950 font-black shadow-lg scale-[1.02]' : 'bg-emerald-800/70 hover:bg-emerald-800 text-white font-semibold'" class="py-3.5 px-4 rounded-2xl text-base md:text-lg flex items-center justify-center gap-2.5 transition transform">
+          <i class="fa-solid fa-chart-line text-lg"></i> 4. 實驗後分析 (B2)
+        </button>
+      </nav>
+    </header>
+
+    <!-- 主內容區域 -->
+    <main class="space-y-8">
+
+      <!-- ==========================================
+           版面一：SBA Area B 規範與評分階梯
+           ========================================== -->
+      <section v-if="currentScreen === 1" class="space-y-8">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+          <h2 class="text-2xl md:text-3xl font-black text-slate-900 mb-4 flex items-center gap-3">
+            <i class="fa-solid fa-bullseye text-emerald-600"></i> Area B 核心評核概念全景
+          </h2>
+          <p class="text-slate-600 text-base md:text-lg leading-relaxed mb-8">
+            香港文憑試生物科校本評核（SBA）中的 Area B 著重考查學生的科學探究素養。透過以下對照架構，助你全面掌握 <strong>B1（實驗規劃）</strong> 與 <strong>B2（數據分析及評鑑）</strong> 的評分重點。
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- B1 卡片 -->
+            <div class="bg-amber-50/80 border-2 border-amber-200 rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-4">
+                <span class="bg-amber-200 text-amber-950 font-black text-sm md:text-base px-3 py-1 rounded-lg">Area B1 核心</span>
+                <i class="fa-solid fa-drafting-compass text-amber-600 text-2xl"></i>
+              </div>
+              <h3 class="font-extrabold text-amber-950 text-xl md:text-2xl mb-2">實驗規劃與設計 (Planning)</h3>
+              <p class="text-base text-amber-900 font-medium mb-4">核心：如何保證實驗具備<strong>公平性 (Fairness)、可靠性 (Reliability) 及有效性 (Validity)</strong>？</p>
+              <ul class="text-sm md:text-base text-amber-950 space-y-2.5 list-disc list-inside leading-relaxed">
+                <li>清晰定義自變量 (IV)、因變量 (DV) 及關鍵控制變量 (CV)</li>
+                <li>準確辨析探究性質（是否需要提出因果「假說」或屬「描述評估」）</li>
+                <li>設計嚴謹且具對比價值的對照組 (Control)</li>
+                <li>選用高精確度儀器並消除操作上的系統誤差</li>
+              </ul>
+            </div>
+
+            <!-- B2 卡片 -->
+            <div class="bg-blue-50/80 border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-4">
+                <span class="bg-blue-200 text-blue-950 font-black text-sm md:text-base px-3 py-1 rounded-lg">Area B2 核心</span>
+                <i class="fa-solid fa-chart-pie text-blue-600 text-2xl"></i>
+              </div>
+              <h3 class="font-extrabold text-blue-950 text-xl md:text-2xl mb-2">數據分析與評鑑 (Processing & Evaluation)</h3>
+              <p class="text-base text-blue-900 font-medium mb-4">核心：如何客觀處理數據，並以<strong>生物學機理作深層批判論證</strong>？</p>
+              <ul class="text-sm md:text-base text-blue-950 space-y-2.5 list-disc list-inside leading-relaxed">
+                <li>標準數據表格整理與合適圖表呈現（坐標軸、單位、刻度）</li>
+                <li>識別異常數據（Anomalies）並解釋趨勢變化</li>
+                <li>運用生物學知識（擴散梯度、細胞破壞、溶解度）解釋機理</li>
+                <li>多角度評鑑現實爭議，精確辨析「技術重複」與「生物學重複」</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 評估階梯互動卡 -->
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-6">
+            <h2 class="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-stairs text-indigo-600"></i> 如何由基礎邁向 5** 優異表現？
+            </h2>
+            <span class="text-sm md:text-base font-semibold text-slate-500">（點選頂部層級按鈕查看對比）</span>
+          </div>
+          
+          <div class="p-6 rounded-2xl border-2 transition-all shadow-sm"
+               :class="currentLevel === 'basic' ? 'bg-amber-50/60 border-amber-300' : currentLevel === 'good' ? 'bg-blue-50/60 border-blue-300' : 'bg-purple-50/60 border-purple-300'">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="font-black text-lg md:text-xl px-3 py-1 rounded-xl text-white"
+                    :class="currentLevel === 'basic' ? 'bg-amber-600' : currentLevel === 'good' ? 'bg-blue-600' : 'bg-purple-600'">
+                {{ currentLevel === 'basic' ? '🥉 基礎表現 (Level 1-2)' : currentLevel === 'good' ? '🥈 良好表現 (Level 3-4)' : '🥇 優異表現 (Level 5/5*)' }}
+              </span>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 text-base md:text-lg leading-relaxed">
+              <div class="bg-white/80 p-4 rounded-xl border border-slate-200/60">
+                <strong class="block text-slate-900 font-extrabold mb-2 text-lg">【B1 規劃表現特徵】</strong>
+                <p v-if="currentLevel === 'basic'" class="text-slate-700">能指出自變量與因變量名稱，列出明顯控制變量，但量度步驟缺乏操作細節與精確度考量。</p>
+                <p v-if="currentLevel === 'good'" class="text-slate-700">清晰寫出變量操作定義與單位，指出水溫與時間具體控制方法，明白探究目的並非提出機理解釋。</p>
+                <p v-if="currentLevel === 'excellent'" class="text-purple-950 font-bold">精確界定本探究屬評估性而非尋求「為什麼」之因果機理解釋（因此不涉假說），深入剖析隱性混雜變量並規劃生物學重複。</p>
+              </div>
+              <div class="bg-white/80 p-4 rounded-xl border border-slate-200/60">
+                <strong class="block text-slate-900 font-extrabold mb-2 text-lg">【B2 分析表現特徵】</strong>
+                <p v-if="currentLevel === 'basic'" class="text-slate-700">能簡單點出哪一泡滴數最多，但未能有效剔除異常值；對「棄第一泡茶」評鑑流於生活常識，缺乏科學數據佐證。</p>
+                <p v-if="currentLevel === 'good'" class="text-slate-700">正確繪製圖表並求平均值，能結合物質擴散解釋抗氧化物釋出量下降，並從正反兩面討論生活習慣。</p>
+                <p v-if="currentLevel === 'excellent'" class="text-purple-950 font-bold">結合濃度梯度與細胞破壞進行深層生物學論證，平衡數據與食品安全作客觀評鑑，並能本質區分「技術重複」與「生物學重複」。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           版面二：實驗背景資料與虛擬實驗台
+           ========================================== -->
+      <section v-if="currentScreen === 2" class="space-y-8">
+        <!-- 化學與生物原理 -->
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+          <h2 class="text-2xl md:text-3xl font-black text-slate-900 mb-4 flex items-center gap-3">
+            <i class="fa-solid fa-atom text-emerald-600"></i> 實驗原理核心速讀
+          </h2>
+          <div class="grid md:grid-cols-3 gap-6 text-base md:text-lg">
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <span class="font-extrabold text-slate-900 text-lg block text-emerald-800">1. 茶葉抗氧化物</span>
+              <p class="text-slate-600 leading-relaxed">茶葉富含<strong>維生素 C（抗壞血酸）</strong>及<strong>茶多酚</strong>等水溶性強還原劑，具備消除自由基的保健功效。</p>
+            </div>
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <span class="font-extrabold text-slate-900 text-lg block text-emerald-800">2. DCPIP 滴定原理</span>
+              <p class="text-slate-600 leading-relaxed">DCPIP 氧化態呈<strong>深藍色</strong>。當被茶液中的抗氧化物還原後會轉變為<strong>無色 (DCPIP-H₂)</strong>。</p>
+            </div>
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <span class="font-extrabold text-slate-900 text-lg block text-emerald-800">3. 核心定量邏輯</span>
+              <p class="text-slate-600 leading-relaxed">固定 2 mL DCPIP：使溶液完全褪色所需茶液<strong>滴數愈少</strong> $\rightarrow$ 抗氧化物濃度<strong>愈高</strong>（呈反比關係）。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步驟流覽與互動滴定模擬器 -->
+        <div class="grid lg:grid-cols-2 gap-8">
+          <!-- 步驟清單 -->
+          <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-base space-y-3 max-h-[560px] overflow-y-auto">
+            <h3 class="font-black text-slate-900 text-xl mb-3 sticky top-0 bg-white pb-3 border-b flex items-center justify-between">
+              <span><i class="fa-solid fa-list-ol mr-2 text-emerald-600"></i> 標準實驗步驟 (1-11)</span>
+              <span class="text-xs md:text-sm bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-bold">SOP 流程</span>
+            </h3>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 leading-relaxed"><span class="font-black text-emerald-700 text-lg mr-1">1-3.</span> 在 5 支試管標示 A1-A4 及 C，用移液管各精準加入 2 mL DCPIP 溶液。</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 leading-relaxed"><span class="font-black text-emerald-700 text-lg mr-1">4-6.</span> 茶包放入燒杯 A，用大針筒注入 60 mL 熱開水，靜待浸泡 2 分鐘後取出茶包。</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 leading-relaxed"><span class="font-black text-emerald-700 text-lg mr-1">7-8.</span> 用滴管逐滴滴入茶液至試管 A1，邊滴邊搖勻至藍色剛好完全褪色，記錄所需滴數。</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 leading-relaxed"><span class="font-black text-emerald-700 text-lg mr-1">9-10.</span> 倒去燒杯剩餘茶液，<strong>保留同一個茶包</strong>，以試管 A2, A3, A4 連續重複沖泡及滴定。</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 leading-relaxed"><span class="font-black text-emerald-700 text-lg mr-1">11.</span> 以蒸餾水代替茶液滴入試管 C 重複滴定，作為陰性對照組。</div>
+          </div>
+
+          <!-- 虛擬滴定互動測試器 -->
+          <div class="bg-slate-900 text-white p-6 md:p-8 rounded-3xl shadow-xl flex flex-col justify-between space-y-6">
+            <div>
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-sm md:text-base text-emerald-400 font-extrabold uppercase tracking-wide flex items-center gap-2">
+                  <i class="fa-solid fa-flask-vial text-lg"></i> 滴定反應動態模擬
+                </span>
+                <span class="text-sm md:text-base bg-slate-800 px-3 py-1 rounded-xl text-slate-200 font-bold border border-slate-700">目前測試：{{ simTeaSample }}</span>
+              </div>
+              
+              <!-- 試管顏色動態顯示 -->
+              <div class="flex justify-center my-6">
+                <div class="w-20 h-48 rounded-b-full border-4 border-slate-600 flex flex-col justify-end p-1.5 relative overflow-hidden bg-slate-800 shadow-2xl">
+                  <div class="w-full transition-all duration-300 rounded-b-full flex items-center justify-center text-xs md:text-sm font-black text-white text-center shadow-inner"
+                       :style="{ height: '75%', backgroundColor: tubeColor }">
+                    {{ simDrops >= targetDrops ? '完全褪色' : '滴定反應中' }}
+                  </div>
+                </div>
+              </div>
+              <p class="text-center text-base md:text-lg text-slate-300 mb-2">已滴入茶液滴數：<strong class="text-emerald-400 text-2xl md:text-3xl font-black mx-1">{{ simDrops }}</strong> 滴 (目標：{{ targetDrops }} 滴)</p>
+            </div>
+
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <button v-for="tea in ['第 1 泡 (A1)', '第 2 泡 (A2)', '第 3 泡 (A3)', '對照組 (C)']" :key="tea"
+                        @click="changeSimSample(tea)"
+                        :class="simTeaSample === tea ? 'bg-emerald-600 text-white font-extrabold shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium'"
+                        class="text-xs md:text-sm py-2.5 rounded-xl transition truncate px-2 text-center border border-slate-700">
+                  {{ tea }}
+                </button>
+              </div>
+              <button @click="addDrop" :disabled="simDrops >= targetDrops && simTeaSample !== '對照組 (C)'"
+                      class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-700 disabled:text-slate-500 text-white font-black text-base md:text-lg rounded-2xl transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-eye-dropper"></i> 滴入一滴茶溶液 (Add 1 Drop)
+              </button>
+              <button @click="resetSim" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm md:text-base font-bold rounded-xl transition">重設滴定 (Reset)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           版面三：實驗前思考題解 (Area B1 專修)
+           ========================================== -->
+      <section v-if="currentScreen === 3" class="space-y-6">
+        <div class="bg-amber-500/10 border-2 border-amber-300 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-lightbulb text-amber-600 text-2xl"></i>
+            <span class="text-base md:text-lg font-black text-amber-950">Area B1 實戰題解導覽（點擊展開解析，當前為 {{ currentLevelText }} 模式）</span>
+          </div>
+          <span class="text-sm md:text-base font-bold bg-amber-200 text-amber-900 px-3 py-1 rounded-full self-start md:self-auto">共 9 題探究前思考</span>
+        </div>
+
+        <!-- B1 題目卡片組 -->
+        <div v-for="(q, index) in b1Questions" :key="index" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <button @click="q.open = !q.open" class="w-full px-6 py-5 text-left font-black text-base md:text-xl text-slate-800 flex justify-between items-center hover:bg-slate-50 transition">
+            <span class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 text-sm md:text-base flex items-center justify-center font-black">{{ index + 1 }}</span>
+              {{ q.title }}
+            </span>
+            <i class="fa-solid transition-transform duration-200 text-slate-400 text-lg" :class="q.open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </button>
+
+          <div v-show="q.open" class="px-6 pb-6 pt-2 text-base md:text-lg border-t border-slate-100 space-y-4 bg-slate-50/50">
+            <!-- 題目描述 -->
+            <p class="text-slate-700 italic bg-white p-4 rounded-xl border border-slate-200 font-medium leading-relaxed">{{ q.question }}</p>
+
+            <!-- 基礎表現 -->
+            <div v-if="currentLevel === 'basic' || currentLevel === 'all'" class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl">
+              <span class="font-black text-amber-900 block mb-1.5 text-base md:text-lg">🥉 基礎表現 (Level 1-2 要求)</span>
+              <p class="text-slate-700 leading-relaxed">{{ q.basic }}</p>
+            </div>
+
+            <!-- 良好表現 -->
+            <div v-if="currentLevel === 'good' || currentLevel === 'all'" class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-xl">
+              <span class="font-black text-blue-900 block mb-1.5 text-base md:text-lg">🥈 良好表現 (Level 3-4 要求)</span>
+              <p class="text-slate-700 leading-relaxed">{{ q.good }}</p>
+            </div>
+
+            <!-- 優異表現 (5**) -->
+            <div v-if="currentLevel === 'excellent' || currentLevel === 'all'" class="p-4 bg-purple-50 border-l-4 border-purple-600 rounded-r-xl">
+              <span class="font-black text-purple-950 block mb-1.5 text-base md:text-lg">🥇 奪星優異表現 (Level 5/5* 核心得分點)</span>
+              <p class="text-slate-800 font-semibold leading-relaxed">{{ q.excellent }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           版面四：實驗後分析題解 (Area B2 專修)
+           ========================================== -->
+      <section v-if="currentScreen === 4" class="space-y-8">
+        <div class="bg-blue-500/10 border-2 border-blue-300 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-chart-column text-blue-600 text-2xl"></i>
+            <span class="text-base md:text-lg font-black text-blue-950">Area B2 數據分析與評鑑指南（當前為 {{ currentLevelText }} 模式）</span>
+          </div>
+          <span class="text-sm md:text-base font-bold bg-blue-200 text-blue-900 px-3 py-1 rounded-full self-start md:self-auto">共 6 題深度評鑑</span>
+        </div>
+
+        <!-- 數據呈現互動模擬表 (Q1) -->
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+          <h3 class="text-lg md:text-xl font-black text-slate-900 mb-4 flex items-center justify-between">
+            <span><i class="fa-solid fa-table mr-2 text-emerald-600"></i> Q1. 實驗數據標準呈現與視覺化</span>
+            <span class="text-sm md:text-base text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full">SBA 標準範本</span>
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse border border-slate-200 text-base md:text-lg">
+              <thead>
+                <tr class="bg-slate-100 text-slate-800 font-black">
+                  <th class="p-3 border">試管標記</th>
+                  <th class="p-3 border">沖泡次數</th>
+                  <th class="p-3 border">滴數 1</th>
+                  <th class="p-3 border">滴數 2</th>
+                  <th class="p-3 border">滴數 3</th>
+                  <th class="p-3 border bg-emerald-50 text-emerald-950 font-black">平均滴數 (滴)</th>
+                  <th class="p-3 border bg-indigo-50 text-indigo-950 font-black">相對抗氧化力 (1/滴數)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 border font-extrabold">A1</td>
+                  <td class="p-3 border">第 1 泡</td>
+                  <td class="p-3 border">4</td>
+                  <td class="p-3 border">5</td>
+                  <td class="p-3 border">4</td>
+                  <td class="p-3 border bg-emerald-50 font-black text-emerald-700">4.3</td>
+                  <td class="p-3 border bg-indigo-50 font-black text-indigo-700">0.233 (最高)</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 border font-extrabold">A2</td>
+                  <td class="p-3 border">第 2 泡</td>
+                  <td class="p-3 border">9</td>
+                  <td class="p-3 border">8</td>
+                  <td class="p-3 border">9</td>
+                  <td class="p-3 border bg-emerald-50 font-black text-emerald-700">8.7</td>
+                  <td class="p-3 border bg-indigo-50 font-black text-indigo-700">0.115</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 border font-extrabold">A3</td>
+                  <td class="p-3 border">第 3 泡</td>
+                  <td class="p-3 border">18</td>
+                  <td class="p-3 border">19</td>
+                  <td class="p-3 border">17</td>
+                  <td class="p-3 border bg-emerald-50 font-black text-emerald-700">18.0</td>
+                  <td class="p-3 border bg-indigo-50 font-black text-indigo-700">0.056</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 border font-extrabold">A4</td>
+                  <td class="p-3 border">第 4 泡</td>
+                  <td class="p-3 border">35</td>
+                  <td class="p-3 border">36</td>
+                  <td class="p-3 border">34</td>
+                  <td class="p-3 border bg-emerald-50 font-black text-emerald-700">35.0</td>
+                  <td class="p-3 border bg-indigo-50 font-black text-indigo-700">0.029 (極低)</td>
+                </tr>
+                <tr class="hover:bg-slate-50 bg-slate-50">
+                  <td class="p-3 border font-extrabold text-slate-500">C</td>
+                  <td class="p-3 border text-slate-500">對照組 (水)</td>
+                  <td class="p-3 border text-slate-500">>60</td>
+                  <td class="p-3 border text-slate-500">>60</td>
+                  <td class="p-3 border text-slate-500">>60</td>
+                  <td class="p-3 border text-slate-500 font-bold">不褪色</td>
+                  <td class="p-3 border text-slate-500 font-bold">0 (無抗氧化力)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- B2 題目卡片組 (Q2 - Q6) -->
+        <div v-for="(q, index) in b2Questions" :key="index" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <button @click="q.open = !q.open" class="w-full px-6 py-5 text-left font-black text-base md:text-xl text-slate-800 flex justify-between items-center hover:bg-slate-50 transition">
+            <span class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-sm md:text-base flex items-center justify-center font-black">{{ index + 2 }}</span>
+              {{ q.title }}
+            </span>
+            <i class="fa-solid transition-transform duration-200 text-slate-400 text-lg" :class="q.open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </button>
+
+          <div v-show="q.open" class="px-6 pb-6 pt-2 text-base md:text-lg border-t border-slate-100 space-y-4 bg-slate-50/50">
+            <p class="text-slate-700 italic bg-white p-4 rounded-xl border border-slate-200 font-medium leading-relaxed">{{ q.question }}</p>
+
+            <div v-if="currentLevel === 'basic' || currentLevel === 'all'" class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl">
+              <span class="font-black text-amber-900 block mb-1.5 text-base md:text-lg">🥉 基礎表現 (Level 1-2 要求)</span>
+              <p class="text-slate-700 leading-relaxed">{{ q.basic }}</p>
+            </div>
+
+            <div v-if="currentLevel === 'good' || currentLevel === 'all'" class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-xl">
+              <span class="font-black text-blue-900 block mb-1.5 text-base md:text-lg">🥈 良好表現 (Level 3-4 要求)</span>
+              <p class="text-slate-700 leading-relaxed">{{ q.good }}</p>
+            </div>
+
+            <div v-if="currentLevel === 'excellent' || currentLevel === 'all'" class="p-4 bg-purple-50 border-l-4 border-purple-600 rounded-r-xl">
+              <span class="font-black text-purple-950 block mb-1.5 text-base md:text-lg">🥇 奪星優異表現 (Level 5/5* 核心得分點)</span>
+              <p class="text-slate-800 font-semibold leading-relaxed">{{ q.excellent }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 頁腳 -->
+    <footer class="mt-16 text-center text-sm md:text-base text-slate-500 font-medium py-8 border-t border-slate-200">
+      HKDSE Biology SBA Area B Lesson Master App • 專門為文憑試生物科校本評核複習設計
+    </footer>
+
+  </div>
+
+  <!-- Vue 3 應用邏輯 -->
+  <script>
+    const { createApp, ref, computed } = Vue;
+
+    createApp({
+      setup() {
+        const currentScreen = ref(1);
+        const currentLevel = ref('excellent'); // 'basic', 'good', 'excellent'
+
+        const currentLevelText = computed(() => {
+          if (currentLevel.value === 'basic') return '基礎 (L1-2)';
+          if (currentLevel.value === 'good') return '良好 (L3-4)';
+          return '優異 (L5/5*)';
+        });
+
+        // 模擬滴定邏輯
+        const simTeaSample = ref('第 1 泡 (A1)');
+        const simDrops = ref(0);
+        const targetDrops = computed(() => {
+          if (simTeaSample.value === '第 1 泡 (A1)') return 4;
+          if (simTeaSample.value === '第 2 泡 (A2)') return 9;
+          if (simTeaSample.value === '第 3 泡 (A3)') return 18;
+          return 999; // 對照組永遠不褪色
+        });
+
+        const tubeColor = computed(() => {
+          if (simTeaSample.value === '對照組 (C)') return '#2563eb'; // 持續藍色
+          const progress = Math.min(simDrops.value / targetDrops.value, 1);
+          if (progress >= 1) return '#e2e8f0'; // 褪色成無色/淡透明
+          return `rgba(37, 99, 235, ${1 - progress * 0.8})`;
+        });
+
+        const addDrop = () => {
+          simDrops.value++;
+        };
+
+        const resetSim = () => {
+          simDrops.value = 0;
+        };
+
+        const changeSimSample = (sample) => {
+          simTeaSample.value = sample;
+          simDrops.value = 0;
+        };
+
+        // B1 題目數據清單
+        const b1Questions = ref([
+          {
+            title: "自變量 (IV) 與有效設定",
+            question: "1. (a) 請指出實驗的自變量。(b) 你如何有效設定實驗中的自變量？",
+            open: true,
+            basic: "自變量是泡茶的次數。每次重複泡茶即可。",
+            good: "自變量是連續泡茶的次數（第 1 至 4 泡）。使用同一個茶包連續加入熱水沖泡 4 次。",
+            excellent: "自變量為同一茶包連續萃取的序數（第 1 至第 4 次沖泡）。設定時必須確保使用『同一個茶包』，並維持每次加入新鮮熱水前完全瀝乾上一泡的殘留溶液，以獨立檢驗該次萃取的釋出量。"
+          },
+          {
+            title: "因變量 (DV)、量度原理與限制",
+            question: "2. (a) 請指出實驗的因變量。(b) 你如何量度實驗中的因變量？解釋這量度方法如何與因變量相關聯。這量度方法有甚麼限制？",
+            open: false,
+            basic: "因變量是抗氧化物的量。以 DCPIP 褪色的滴數來量度。限制是滴管每滴大小可能不同。",
+            good: "因變量是茶溶液中釋出的抗氧化物濃度。量度使 2 mL DCPIP 褪色所需的茶水滴數。滴數愈少代表抗氧化物濃度愈高。限制在於肉眼難以精確判斷褪色終點。",
+            excellent: "因變量為茶液中的總抗氧化（還原）能力。量度還原固定體積/濃度（2 mL）DCPIP 所需的茶液滴數（滴數與抗氧化物濃度呈反比）。主要限制：(1) 滴管擠壓受人手壓力影響致每滴體積不均；(2) 茶湯本身色澤干擾終點判定；(3) DCPIP 僅反映非特異性總還原力，無法個別定量維生素 C 或特定茶多酚。"
+          },
+          {
+            title: "重要控制變量 (CV) 與生物學機理",
+            question: "3. 提出兩項重要的控制變量。你會如何控制這些變量？利用你的生物學知識，解釋為何要保持這些變量不變。",
+            open: false,
+            basic: "水溫和浸泡時間要一樣。都用熱水浸泡 2 分鐘。因為溫度和時間會影響泡茶結果。",
+            good: "控制變量 1：每次浸泡的水溫（如固定 90°C）；控制變量 2：每次浸泡時間（固定 2 分鐘）。水溫會影響抗氧化物分子的熱運動與溶解速率；時間影響擴散平衡程度。",
+            excellent: "控制變量 1：初始水溫（以溫度計監測固定於沸水 95°C）—— 水溫直接決定水分子動能與抗氧化物溶出速率；控制變量 2：浸泡時間（精確計時 2 分鐘取出）—— 浸泡時間決定溶質跨越細胞壁與組織達到擴散平衡的程度；控制變量 3：DCPIP 溶液的初始體積（2.0 mL）與濃度 —— 確保每次滴定所需的化學還原當量完全一致。"
+          },
+          {
+            title: "探究性質與假說 (Hypothesis) 判定",
+            question: "4. 此實驗涉及假說嗎？若有的話，請指出相關的預測結果。",
+            open: false,
+            basic: "不涉及假說（沒有假說）。因為這只是一個量度茶水變化的實驗，不需要寫預測。",
+            good: "不涉及假說（沒有假說）。因為本探究的目的純粹是評估和比較某茶葉樣本在連續四次沖泡中釋出抗氧化物量的變化（探究「是什麼/有何變化」），而非針對某一生物學現象提出因果機理的科學解釋（「為什麼」），因此不涉及假說及相應的預測。",
+            excellent: "不涉及假說（沒有假說）。【核心科學本質解析】：在科學探究中，「假說（Hypothesis）」是對觀察到的自然現象提出之「嘗試性因果解釋（Tentative explanation for 'Why'）」。本實驗的探究目標屬於評估性/描述性探究（Evaluative / Descriptive Investigation），旨在量化並評估同一茶包在連續沖泡下抗氧化物的釋出量變化模式（探究 What happens 而非就某一機制解釋 Why）。因此本實驗不涉及假說，亦無須提出建基於因果假說機理的預測。"
+          },
+          {
+            title: "取水操作評鑑（子賢的見解）",
+            question: "5. (1) 先取 300 mL 熱水備用 vs (2) 每次即時取 60 mL 熱水。子賢認為做法 (2) 更佳，評論他的見解。",
+            open: false,
+            basic: "同意子賢。因為熱水放久了會變冷。",
+            good: "贊同子賢。做法 (1) 的 300 mL 熱水置於燒杯中會隨時間降溫，導致第 4 泡的水溫遠低於第 1 泡；做法 (2) 每次即時取水能維持一致的水溫。",
+            excellent: "完全同意子賢。做法 (1) 將 300 mL 熱水暴露於室溫中，當進行至第 3 及第 4 泡時，水溫必然因散熱而顯著下降。水溫下降會大幅降低分子擴散率與溶質溶解度，引入了『溫度差異』這項嚴重的混雜變量（Confounding Variable），破壞實驗效度；做法 (2) 確保了每次沖泡時熱水初始溫度的高度一致性。"
+          },
+          {
+            title: "試劑轉移儀器選擇",
+            question: "6. 進行滴定前，你會用什麼方法轉移某容積的試劑進入試管中？為什麼你會這樣做？",
+            open: false,
+            basic: "用移液管或量筒轉移 2 mL。因為比較準確。",
+            good: "使用刻度移液管（Graduated Pipette）轉移 2 mL DCPIP。因為移液管管徑狹窄且刻度精密，能準確量取固定體積。",
+            excellent: "應使用刻度移液管（Graduated pipette）或微量移液槍（Micropipette）轉移 2.0 mL DCPIP 溶液。其精準度高達 ±0.01 mL，能極大化減少轉移過程中的系統誤差（Systematic error），確保每一次滴定的反應底物量完全等同。"
+          },
+          {
+            title: "白瓷磚在滴定中的作用",
+            question: "7. 滴定時，應把試管放在白瓷磚上觀察顏色轉變。解釋為什麼這能提升數據的準確度。",
+            open: false,
+            basic: "白瓷磚是白色的，看顏色比較清楚。",
+            good: "白瓷磚提供白色反光背景，增加顏色對比度，有助於準確觀察藍色 DCPIP 完全褪為無色的瞬間。",
+            excellent: "白瓷磚能提供純白且漫反射均勻的背景，消除了實驗桌面的雜色反光及陰影干擾，顯著提高肉眼對藍色消失終點的辨析敏銳度，防止因觀察延遲而加入過量茶液（Over-titration），從而提升量度數據的準確度（Accuracy）。"
+          },
+          {
+            title: "終點判斷的主觀性控制",
+            question: "8. 共同商量判斷 vs 單一位組員獨立判斷所有結果，哪一做法較合適？",
+            open: false,
+            basic: "一位組員判斷較好，因為大家想法可能不一樣。",
+            good: "由固定一位組員對所有試管進行終點判定較合適。因為不同人對顏色終點的敏感度有主觀差異，一人判斷能保持標準統一。",
+            excellent: "由單一位組員獨立判定所有試管終點最為合適。因為不同人眼對色彩飽和度的感知閾值存在個體差異（主觀偏誤）。若中途換人或由多人爭拗，會引入隨機判定漂移；由同一位操作者以恆定標準裁決，能確保實驗在整個系列中具備內在一致性（Internal Consistency）。"
+          },
+          {
+            title: "信度 (Reliability) 與效度 (Validity) 提升方案",
+            question: "9. 基於以上實驗設計，你還有什麼提升實驗信度和效度的方法？",
+            open: false,
+            basic: "信度：多做幾次取平均。效度：放對照組並小心控制溫度。",
+            good: "提升信度：使用同批次茶包重複整套實驗至少 3 次取平均值；提升效度：設置蒸餾水對照組 C，並在比色時消除茶水本身黃褐色的干擾。",
+            excellent: "提升信度（Reliability）：進行生物學重複（選取同批次 3-5 個獨立茶包進行完整平行測試），以消除個別茶包質量波動的偶然性；提升效度（Validity）：(1) 設立試管 C（陰性對照）排除溶劑或空氣自氧化導致的褪色；(2) 改用分光光度計（Spectrophotometer）於 600 nm 波長下測定吸光度，將主觀目視轉化為客觀物理吸光值，徹底排除茶湯天然色素的視覺干擾。"
+          }
+        ]);
+
+        // B2 題目數據清單
+        const b2Questions = ref([
+          {
+            title: "異常數據 (Anomalies) 識別與成因",
+            question: "2. 在數據組中是否有出現任何異常數據？為何判斷該數據是異常？成因是什麼？",
+            open: true,
+            basic: "如果有某次滴數差很多（如 20 滴）就是異常。可能是因為數錯滴數。",
+            good: "若重複數據中某個數值顯著偏離平均值（例如其他是 8 滴，突然出現 22 滴），即為異常值。成因可能是滴定時忘記搖勻試管導致過量加入。",
+            excellent: "異常值判定：若某重複滴定值超出該組正常分佈區間（如偏離平均值 2 個標準差以上），即屬異常值（計算平均時應予以剔除）。可能成因：(1) 未邊滴邊充分搖勻試管，造成局部 DCPIP 未即時反應而滴加過量；(2) 滴管管尖有氣泡或持管傾斜，致使單滴體積變小；(3) 茶包在沖泡時浮於水面未完全浸潤。"
+          },
+          {
+            title: "數據趨勢與生物學機理解釋",
+            question: "3. (i) 哪一泡茶抗氧化物最多？(ii) 數據呈現什麼趨勢？運用生物學知識解釋該趨勢。",
+            open: false,
+            basic: "(i) 第 1 泡最多。(ii) 泡茶次數愈多，滴數愈多，代表抗氧化物愈少。因為茶葉的茶多酚都被洗掉了。",
+            good: "(i) 第 1 泡（A1）抗氧化物含量最高（所需滴數最少）。(ii) 趨勢：隨沖泡次數增加，抗氧化物濃度遞減。生物學解釋：抗氧化物（維生素 C/茶多酚）為水溶性，第 1 泡時茶葉組織內濃度高，在極大濃度梯度下快速擴散溶出，隨後儲量耗盡。",
+            excellent: "(i) 第 1 泡茶（A1）抗氧化物含量最多。(ii) 趨勢與機理：所需滴數呈階梯式大幅上升（抗氧化能力急降）。機理解釋：茶葉在加工揉撚過程中細胞結構已被破壞，其水溶性抗氧化物在第 1 泡注入熱水時，細胞內外存在極高的『濃度梯度（Concentration gradient）』，擴散驅動力最強；隨後連續萃取使茶葉細胞內的溶質儲量枯竭，濃度梯度減弱，溶出速率顯著下降。"
+          },
+          {
+            title: "「棄掉第一泡茶」習慣之正反評鑑",
+            question: "4. 試就『棄掉第一泡茶』這一做法，從正反兩面加以評論（運用實驗結果作佐證）。",
+            open: false,
+            basic: "支持：第一泡茶可能有灰塵農藥。反對：實驗證明第一泡茶最多抗氧化物，倒掉很浪費。",
+            good: "支持原因：第一泡可洗去茶葉表面殘留的脂溶性/水溶性農藥、微塵雜質，並減少第一泡溶出的過多咖啡因與苦澀味。反對原因：本實驗數據證明第 1 泡所需滴數最少（抗氧化物含量最豐富），倒掉會流失最具保健價值的營養成分。",
+            excellent: "【支持論據（利）】：茶葉種植與加工中可能附著表面農藥殘留、灰塵或雜質，第 1 泡能起洗滌去污作用；且第一泡浸出的單寧酸與咖啡因濃度最高，倒掉有助降低對胃黏膜刺激及避免中樞神經神經過度興奮。【反對論據（弊）】：實驗數據有力證實第 1 泡茶含有最高濃度的抗氧化物（維生素 C 及茶多酚），棄掉第一泡實質上丟棄了茶葉最精華的自由基清除能力；若茶源具備安全認證，倒掉第一泡將造成健康價值與茶香風味的雙重損失。"
+          },
+          {
+            title: "量度誤差剖析與儀器級改善方案",
+            question: "5. (a) 探究中有哪些可能導致量度誤差的地方？如何影響判斷？(b) 試提出並解釋改善方法。",
+            open: false,
+            basic: "誤差：手滴不準確、看顏色不準。改善：用更好的儀器量體積，換機器看顏色。",
+            good: "誤差：(1) 手持滴管擠出的每滴體積不一；(2) 茶湯顏色干擾終點判斷。改善方法：改用微量滴定管（Microburette）直接讀取 mL 體積，或用比色計（Colorimeter）測定光吸光度。",
+            excellent: "(a) 誤差來源：(1) 滴管角度與表面張力變化造成液滴體積變異（Drop-size variation）；(2) 茶湯自身的黃褐色使藍色消失終點模糊，易引致過量滴定。(b) 儀器級改善：改用微量移液槍（Micropipette）以精確微升體積（μL）進行定量滴定；改用分光光度計在 600 nm 下監測吸光度，建立標準校準曲線（Standard calibration curve）將光學讀數直接轉換為絕對抗氧化物濃度。"
+          },
+          {
+            title: "重複實驗策略對決：一心 vs 允行",
+            question: "6. 一心（同一杯茶重複滴定）vs 允行（換另一個茶包重新沖泡），你同意誰的見解？為什麼？",
+            open: false,
+            basic: "同意允行。因為用新的茶包做實驗比較公正可靠。",
+            good: "同意允行的見解。一心只是重複滴定茶水，只能減少滴定操作誤差；允行重新用新茶包重複整個步驟，能驗證沖泡過程及茶包本身的代表性。",
+            excellent: "完全同意允行的見解。核心本質在於【技術重複】與【生物學重複】的區別：一心的做法僅屬於『技術重複（Technical Replicate）』，只能抵消滴管擠壓等滴定操作隨機誤差，無法評估沖泡過程（溫度衰減、浸泡擴散）的變異；允行採用同款新茶包重做整套流程屬於『生物學重複（Biological Replicate）』，能有效涵蓋茶葉樣本天然個體差異及沖泡系統波動，才能真正確立實驗結論的統計可靠性與外在效度（External Validity）。"
+          }
+        ]);
+
+        return {
+          currentScreen,
+          currentLevel,
+          currentLevelText,
+          simTeaSample,
+          simDrops,
+          targetDrops,
+          tubeColor,
+          addDrop,
+          resetSim,
+          changeSimSample,
+          b1Questions,
+          b2Questions
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
